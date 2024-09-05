@@ -1,22 +1,32 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-# -----------------------------------------
-# Phantom sample App Connector python file
-# -----------------------------------------
+# File: freshservice_connector.py
+
+# Copyright (c) Orro Group, 2024
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software distributed under
+# the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied. See the License for the specific language governing permissions
+# and limitations under the License.
+
 
 # Python 3 Compatibility imports
 from __future__ import print_function, unicode_literals
 
+import json
+
 # Phantom App imports
 import phantom.app as phantom
-from phantom.base_connector import BaseConnector
-from phantom.action_result import ActionResult
-
 # Usage of the consts file is recommended
 # from freshservice_consts import *
 import requests
-import json
 from bs4 import BeautifulSoup
+from phantom.action_result import ActionResult
+from phantom.base_connector import BaseConnector
 
 
 class RetVal(tuple):
@@ -206,24 +216,41 @@ class FreshServiceConnector(BaseConnector):
         # Import this module for the HTTPBasicAuth shortcut in the request rather than b64 encoding and authorization header.
         import requests
         from requests.auth import HTTPBasicAuth
-        
+
         # HTTP POST
         url = 'https://' + self._base_url + ct_endpoint
         if not custom_field == "":
-            payload={"subject": subject,"description": description, "requester_id": int(requester_id), "priority" : int(priority), "status": int(status), "group_id": int(group_id), "custom_fields": {custom_field : custom_field_value}}
+            payload = {
+                "subject": subject,
+                "description": description,
+                "requester_id": int(requester_id),
+                "priority": int(priority),
+                "status": int(status),
+                "group_id": int(group_id),
+                "custom_fields": {
+                    custom_field: custom_field_value
+                }
+            }
         else:
-            payload={"subject": subject,"description": description, "requester_id": int(requester_id), "priority" : int(priority), "status": int(status), "group_id": int(group_id)}
-        
+            payload = {
+                "subject": subject,
+                "description": description,
+                "requester_id": int(requester_id),
+                "priority": int(priority),
+                "status": int(status),
+                "group_id": int(group_id)
+            }
+
         response = requests.request("POST", url, auth=HTTPBasicAuth(self._api_key, ':X'), json=payload)
 
         # Now post process the data,  uncomment code as you deem fit.
-        # Add the response into the data section, after testing response as an invalid ticket gives no 
+        # Add the response into the data section, after testing response as an invalid ticket gives no
         action_result.add_data(response.json())
 
         # Add a dictionary that is made up of the most important values from data into the summary
-        #summary = action_result.update_summary({})
-        #summary['ticket_id'] = (response.json()['ticket']['id'])
-        #summary['summ'] = "Ticket created with ID " + str((response.json()['ticket']['id']))
+        # summary = action_result.update_summary({})
+        # summary['ticket_id'] = (response.json()['ticket']['id'])
+        # summary['summ'] = "Ticket created with ID " + str((response.json()['ticket']['id']))
 
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
@@ -258,7 +285,7 @@ class FreshServiceConnector(BaseConnector):
 
         # Now post process the data,  uncomment code as you deem fit
         # Add the response into the data section
-        if not '404' in str(response):
+        if not ('404' in str(response)):
             action_result.add_data(response.json())
         else:
             response_str = """{"http_response": "404"}"""
@@ -266,12 +293,12 @@ class FreshServiceConnector(BaseConnector):
             action_result.add_data(response_json)
 
         # Add a dictionary that is made up of the most important values from data into the summary
-        #summary = action_result.update_summary({})
-        #summary['summ'] = "Got ticket ID " + str((response.json()['ticket']['id']))
+        # summary = action_result.update_summary({})
+        # summary['summ'] = "Got ticket ID " + str((response.json()['ticket']['id']))
 
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
-        if not '404' in str(response):
+        if not ('404' in str(response)):
             success_message = "Got ticket ID " + str((response.json()['ticket']['id']))
             return action_result.set_status(phantom.APP_SUCCESS, success_message)
         else:
@@ -300,25 +327,25 @@ class FreshServiceConnector(BaseConnector):
         # Import this module for the HTTPBasicAuth shortcut in the request rather than b64 encoding and authorization header.
         import requests
         from requests.auth import HTTPBasicAuth
-        
+
         # HTTP POST
         url_end = str(ticket_id) + '/notes'
         url = 'https://' + self._base_url + an_endpoint + url_end
         if not private == "":
-            payload={"body": body}
+            payload = {"body": body}
         else:
-            payload={"body": body, "private": bool(False)}
-        
+            payload = {"body": body, "private": bool(False)}
+
         response = requests.request("POST", url, auth=HTTPBasicAuth(self._api_key, ':X'), json=payload)
 
         # Now post process the data,  uncomment code as you deem fit.
-        # Add the response into the data section, after testing response as an invalid ticket gives no 
+        # Add the response into the data section, after testing response as an invalid ticket gives no
         action_result.add_data(response.json())
 
         # Add a dictionary that is made up of the most important values from data into the summary
-        #summary = action_result.update_summary({})
-        #summary['ticket_id'] = (response.json()['ticket']['id'])
-        #summary['summ'] = "Ticket created with ID " + str((response.json()['ticket']['id']))
+        # summary = action_result.update_summary({})
+        # summary['ticket_id'] = (response.json()['ticket']['id'])
+        # summary['summ'] = "Ticket created with ID " + str((response.json()['ticket']['id']))
 
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
@@ -358,34 +385,88 @@ class FreshServiceConnector(BaseConnector):
         from requests.auth import HTTPBasicAuth
 
         # HTTP PUT
-        # Create the payload depending on which optional fields were populated. Assumes that the user entered the custom field value if they entered a custom field.
-        # Also expect responder_id, category, sub_category and item_category to all be set as one action. assigned_team became a new custom field as part of an new add-on that needs to be set at Resolved status too.
+        # Create the payload depending on which optional fields were populated.
+        # Assumes that the user entered the custom field value if they entered a custom field.
+        # Also expect responder_id, category, sub_category and item_category to all be set as one action.
+        # assigned_team became a new custom field as part of an new add-on that needs to be set at Resolved status too.
         if not update_priority == "":
             if not update_custom_field == "":
                 if not responder_id == "":
-                    payload={"priority": int(update_priority), "status": int(update_status), "custom_fields": {update_custom_field : update_custom_field_value, "assigned_team": "Security"}, "responder_id": int(responder_id), "category": category, "sub_category": sub_category, "item_category": item_category}
+                    payload = {
+                        "priority": int(update_priority),
+                        "status": int(update_status),
+                        "custom_fields": {
+                            update_custom_field: update_custom_field_value,
+                            "assigned_team": "Security"
+                        },
+                        "responder_id": int(responder_id),
+                        "category": category,
+                        "sub_category": sub_category,
+                        "item_category": item_category
+                    }
                 else:
-                    payload={"priority": int(update_priority), "status": int(update_status), "custom_fields": {update_custom_field : update_custom_field_value}}
+                    payload = {
+                        "priority": int(update_priority),
+                        "status": int(update_status),
+                        "custom_fields": {
+                            update_custom_field: update_custom_field_value
+                        }
+                    }
             elif not responder_id == "":
-                payload={"priority": int(update_priority), "status": int(update_status), "custom_fields": {"assigned_team": "Security"}, "responder_id": int(responder_id), "category": category, "sub_category": sub_category, "item_category": item_category}
+                payload = {
+                    "priority": int(update_priority),
+                    "status": int(update_status),
+                    "custom_fields": {"assigned_team": "Security"},
+                    "responder_id": int(responder_id),
+                    "category": category,
+                    "sub_category": sub_category,
+                    "item_category": item_category
+                }
             else:
-                payload={"priority": int(update_priority), "status": int(update_status)}
+                payload = {
+                    "priority": int(update_priority),
+                    "status": int(update_status)
+                }
         elif not update_custom_field == "":
             if not responder_id == "":
-                    payload={"status": int(update_status), "custom_fields": {update_custom_field : update_custom_field_value, "assigned_team": "Security"}, "responder_id": int(responder_id), "category": category, "sub_category": sub_category, "item_category": item_category}
+                payload = {
+                    "status": int(update_status),
+                    "custom_fields": {
+                        update_custom_field: update_custom_field_value,
+                        "assigned_team": "Security"
+                    },
+                    "responder_id": int(responder_id),
+                    "category": category,
+                    "sub_category": sub_category,
+                    "item_category": item_category
+                }
             else:
-                payload={"status": int(update_status), "custom_fields": {update_custom_field : update_custom_field_value}}
+                payload = {
+                    "status": int(update_status),
+                    "custom_fields": {
+                        update_custom_field: update_custom_field_value
+                    }
+                }
         elif not responder_id == "":
-            payload={"status": int(update_status), "custom_fields": {"assigned_team": "Security"}, "responder_id": int(responder_id), "category": category, "sub_category": sub_category, "item_category": item_category}
+            payload = {
+                "status": int(update_status),
+                "custom_fields": {
+                    "assigned_team": "Security"
+                },
+                "responder_id": int(responder_id),
+                "category": category,
+                "sub_category": sub_category,
+                "item_category": item_category
+            }
         else:
-            payload={"status": int(update_status)}
-        
+            payload = {"status": int(update_status)}
+
         # Create the URL depending on bypass_mandatory being true or not.
         if not bypass_mandatory == "":
             url = 'https://' + self._base_url + update_endpoint + ticket_id + '?bypass_mandatory=true'
         else:
             url = 'https://' + self._base_url + update_endpoint + ticket_id
-        
+
         response = requests.request("PUT", url, auth=HTTPBasicAuth(self._api_key, ':X'), json=payload)
 
         # Now post process the data,  uncomment code as you deem fit
@@ -460,18 +541,21 @@ class FreshServiceConnector(BaseConnector):
 
 def main():
     import argparse
+    import sys
 
     argparser = argparse.ArgumentParser()
 
     argparser.add_argument('input_test_json', help='Input Test JSON file')
     argparser.add_argument('-u', '--username', help='username', required=False)
     argparser.add_argument('-p', '--password', help='password', required=False)
+    argparser.add_argument('-v', '--verify', action='store_true', help='verify', required=False, default=False)
 
     args = argparser.parse_args()
     session_id = None
 
     username = args.username
     password = args.password
+    verify = args.verify
 
     if username is not None and password is None:
 
@@ -484,7 +568,7 @@ def main():
             login_url = FreshServiceConnector._get_phantom_base_url() + '/login'
 
             print("Accessing the Login page")
-            r = requests.get(login_url, verify=False)
+            r = requests.get(login_url, verify=verify)
             csrftoken = r.cookies['csrftoken']
 
             data = dict()
@@ -497,11 +581,11 @@ def main():
             headers['Referer'] = login_url
 
             print("Logging into Platform to get the session id")
-            r2 = requests.post(login_url, verify=False, data=data, headers=headers)
+            r2 = requests.post(login_url, verify=verify, data=data, headers=headers)
             session_id = r2.cookies['sessionid']
         except Exception as e:
             print("Unable to get session id from the platform. Error: " + str(e))
-            exit(1)
+            sys.exit(1)
 
     with open(args.input_test_json) as f:
         in_json = f.read()
@@ -518,7 +602,7 @@ def main():
         ret_val = connector._handle_action(json.dumps(in_json), None)
         print(json.dumps(json.loads(ret_val), indent=4))
 
-    exit(0)
+    sys.exit(0)
 
 
 if __name__ == '__main__':

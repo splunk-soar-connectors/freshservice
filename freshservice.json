@@ -4,8 +4,8 @@
     "description": "Fresh Service ITSM integration app",
     "type": "ticketing",
     "product_vendor": "freshworks",
-    "logo": "freshservice.png",
-    "logo_dark": "freshservice_dark.png",
+    "logo": "logo_freshservice.svg",
+    "logo_dark": "logo_freshservice_dark.svg",
     "product_name": "freshservice",
     "python_version": "3",
     "product_version_regex": ".*",
@@ -22,19 +22,15 @@
             "description": "e.g. domain.freshservice.com",
             "data_type": "string",
             "required": true,
-            "value_list": [],
-            "default": "",
             "order": 0,
-            "name": "base_url",
-            "id": 0
+            "name": "base_url"
         },
         "api_key": {
             "description": "API Key from FS",
             "data_type": "password",
             "required": true,
             "order": 1,
-            "name": "api_key",
-            "id": 1
+            "name": "api_key"
         }
     },
     "actions": [
@@ -42,7 +38,6 @@
             "action": "test connectivity",
             "identifier": "test_connectivity",
             "description": "Validate the asset configuration for connectivity using supplied configuration",
-            "verbose": "",
             "type": "test",
             "read_only": true,
             "parameters": {},
@@ -53,7 +48,6 @@
             "action": "create ticket",
             "identifier": "create_ticket",
             "description": "Create a ticket (issue)",
-            "verbose": "",
             "type": "generic",
             "read_only": false,
             "parameters": {
@@ -61,47 +55,39 @@
                     "description": "Subject of the ticket",
                     "data_type": "string",
                     "required": true,
-                    "primary": false,
                     "contains": [
                         "freshservice subject"
                     ],
-                    "value_list": [],
-                    "default": "",
                     "order": 0,
-                    "name": "subject"
+                    "name": "subject",
+                    "primary": true
                 },
                 "description": {
                     "description": "Description of the ticket",
                     "data_type": "string",
                     "required": true,
-                    "primary": false,
                     "contains": [
                         "freshservice description"
                     ],
-                    "value_list": [],
-                    "default": "",
                     "order": 1,
-                    "name": "description"
+                    "name": "description",
+                    "primary": true
                 },
                 "requester_id": {
                     "description": "ID of the requester",
                     "data_type": "numeric",
                     "required": true,
-                    "primary": false,
                     "contains": [
                         "freshservice requester"
                     ],
-                    "value_list": [],
-                    "default": "",
                     "order": 2,
-                    "name": "requester_id"
+                    "name": "requester_id",
+                    "primary": true
                 },
                 "priority": {
                     "description": "Priority of ticket (1-4)",
                     "data_type": "numeric",
                     "required": true,
-                    "primary": false,
-                    "contains": [],
                     "value_list": [
                         "1",
                         "2",
@@ -116,7 +102,7 @@
                     "description": "Status of ticket",
                     "data_type": "numeric",
                     "required": true,
-                    "primary": false,
+                    "primary": true,
                     "contains": [
                         "incident status"
                     ],
@@ -134,12 +120,10 @@
                     "description": "Group ID to assign ticket to",
                     "data_type": "numeric",
                     "required": true,
-                    "primary": false,
+                    "primary": true,
                     "contains": [
                         "freshservice group_id"
                     ],
-                    "value_list": [],
-                    "default": "",
                     "order": 5,
                     "name": "group_id"
                 }
@@ -151,7 +135,7 @@
                     "contains": [
                         "freshservice subject"
                     ],
-                    "column_name": "subject",
+                    "column_name": "Subject",
                     "column_order": 0
                 },
                 {
@@ -160,7 +144,7 @@
                     "contains": [
                         "freshservice description"
                     ],
-                    "column_name": "description",
+                    "column_name": "Description",
                     "column_order": 1
                 },
                 {
@@ -169,14 +153,13 @@
                     "contains": [
                         "freshservice requester"
                     ],
-                    "column_name": "requester_id",
+                    "column_name": "Requester ID",
                     "column_order": 2
                 },
                 {
                     "data_path": "action_result.parameter.priority",
                     "data_type": "numeric",
-                    "contains": [],
-                    "column_name": "priority",
+                    "column_name": "Priority",
                     "column_order": 3
                 },
                 {
@@ -185,7 +168,7 @@
                     "contains": [
                         "incident status"
                     ],
-                    "column_name": "status",
+                    "column_name": "Status",
                     "column_order": 4
                 },
                 {
@@ -194,14 +177,18 @@
                     "contains": [
                         "freshservice group_id"
                     ],
-                    "column_name": "group_id",
+                    "column_name": "Group ID",
                     "column_order": 5
                 },
                 {
                     "data_path": "action_result.status",
                     "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 6
+                    "column_name": "Status",
+                    "column_order": 6,
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -225,18 +212,13 @@
             "action": "get ticket",
             "identifier": "get_ticket",
             "description": "Get ticket (issue) information",
-            "verbose": "",
-            "type": "generic",
+            "type": "investigate",
             "read_only": true,
             "parameters": {
                 "ticket_id": {
                     "description": "Ticket ID",
                     "data_type": "string",
                     "required": true,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
                     "order": 0,
                     "name": "ticket_id"
                 }
@@ -245,15 +227,18 @@
                 {
                     "data_path": "action_result.parameter.ticket_id",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "ticket_id",
+                    "column_name": "Ticket ID",
                     "column_order": 0
                 },
                 {
                     "data_path": "action_result.status",
                     "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 1
+                    "column_name": "Status",
+                    "column_order": 1,
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -276,8 +261,7 @@
         {
             "action": "add note",
             "identifier": "add_note",
-            "description": "Add a note to a ticket.",
-            "verbose": "",
+            "description": "Add a note to a ticket",
             "type": "generic",
             "read_only": false,
             "parameters": {
@@ -289,8 +273,6 @@
                     "contains": [
                         "freshservice ticket_id"
                     ],
-                    "value_list": [],
-                    "default": "",
                     "order": 0,
                     "name": "ticket_id"
                 },
@@ -298,20 +280,12 @@
                     "description": "HTML format body",
                     "data_type": "string",
                     "required": true,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
                     "order": 1,
                     "name": "body"
                 },
                 "private": {
                     "description": "Toggle of private or not",
                     "data_type": "boolean",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "default": "",
                     "order": 2,
                     "name": "private"
                 }
@@ -323,28 +297,30 @@
                     "contains": [
                         "freshservice ticket_id"
                     ],
-                    "column_name": "ticket_id",
+                    "column_name": "Ticket ID",
                     "column_order": 0
                 },
                 {
                     "data_path": "action_result.parameter.body",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "body",
+                    "column_name": "Body",
                     "column_order": 1
                 },
                 {
                     "data_path": "action_result.parameter.private",
                     "data_type": "boolean",
-                    "contains": [],
-                    "column_name": "private",
+                    "column_name": "Private",
                     "column_order": 2
                 },
                 {
                     "data_path": "action_result.status",
                     "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 3
+                    "column_name": "Status",
+                    "column_order": 3,
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -368,7 +344,6 @@
             "action": "update ticket",
             "identifier": "update_ticket",
             "description": "Update ticket (issue)",
-            "verbose": "",
             "type": "generic",
             "read_only": false,
             "parameters": {
@@ -380,8 +355,6 @@
                     "contains": [
                         "freshservice ticket_id"
                     ],
-                    "value_list": [],
-                    "default": "",
                     "order": 0,
                     "name": "ticket_id"
                 },
@@ -389,8 +362,6 @@
                     "description": "Update Status by its numeric value",
                     "data_type": "numeric",
                     "required": true,
-                    "primary": false,
-                    "contains": [],
                     "value_list": [
                         "2",
                         "3",
@@ -404,8 +375,6 @@
                 "update_priority": {
                     "description": "Update Priority by its numeric value",
                     "data_type": "numeric",
-                    "required": false,
-                    "primary": false,
                     "contains": [
                         "vault id"
                     ],
@@ -417,84 +386,51 @@
                     ],
                     "default": "1",
                     "order": 2,
-                    "name": "update_priority"
+                    "name": "update_priority",
+                    "primary": true
                 },
                 "responder_id": {
                     "description": "Agent/Responder",
                     "data_type": "numeric",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
                     "order": 3,
                     "name": "responder_id"
                 },
                 "category": {
                     "description": "Category",
                     "data_type": "string",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
                     "order": 4,
                     "name": "category"
                 },
                 "sub_category": {
                     "description": "Sub-Category",
                     "data_type": "string",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
                     "order": 5,
                     "name": "sub_category"
                 },
                 "item_category": {
                     "description": "Item",
                     "data_type": "string",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
                     "order": 6,
                     "name": "item_category"
                 },
                 "update_custom_field": {
                     "description": "Custom field name to be updated",
                     "data_type": "string",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
                     "order": 7,
                     "name": "update_custom_field"
                 },
                 "update_custom_field_value": {
                     "description": "Custom field value to be updated",
                     "data_type": "string",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
                     "order": 8,
                     "name": "update_custom_field_value"
                 },
                 "bypass_mandatory": {
-                    "description": "Mark true if required, need to be admin.",
+                    "description": "Mark true if required, need to be admin",
                     "data_type": "string",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
                     "value_list": [
                         "true"
                     ],
-                    "default": "",
                     "order": 9,
                     "name": "bypass_mandatory"
                 }
@@ -506,14 +442,13 @@
                     "contains": [
                         "freshservice ticket_id"
                     ],
-                    "column_name": "ticket_id",
+                    "column_name": "Ticket ID",
                     "column_order": 0
                 },
                 {
                     "data_path": "action_result.parameter.update_status",
                     "data_type": "numeric",
-                    "contains": [],
-                    "column_name": "update_status",
+                    "column_name": "Update Status",
                     "column_order": 1
                 },
                 {
@@ -522,63 +457,60 @@
                     "contains": [
                         "vault id"
                     ],
-                    "column_name": "update_priority",
+                    "column_name": "Update Priority",
                     "column_order": 2
                 },
                 {
                     "data_path": "action_result.parameter.responder_id",
                     "data_type": "numeric",
-                    "contains": [],
-                    "column_name": "responder_id",
+                    "column_name": "Responder ID",
                     "column_order": 3
                 },
                 {
                     "data_path": "action_result.parameter.category",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "category",
+                    "column_name": "Category",
                     "column_order": 4
                 },
                 {
                     "data_path": "action_result.parameter.sub_category",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "sub_category",
+                    "column_name": "Sub Category",
                     "column_order": 5
                 },
                 {
                     "data_path": "action_result.parameter.item_category",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "item_category",
+                    "column_name": "Item Category",
                     "column_order": 6
                 },
                 {
                     "data_path": "action_result.parameter.update_custom_field",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "update_custom_field",
+                    "column_name": "Update Custom Field",
                     "column_order": 7
                 },
                 {
                     "data_path": "action_result.parameter.update_custom_field_value",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "update_custom_field_value",
+                    "column_name": "Update Custom Field Value",
                     "column_order": 8
                 },
                 {
                     "data_path": "action_result.parameter.bypass_mandatory",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "bypass_mandatory",
+                    "column_name": "Bypass Mandatory",
                     "column_order": 9
                 },
                 {
                     "data_path": "action_result.status",
                     "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 10
+                    "column_name": "Status",
+                    "column_order": 10,
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
