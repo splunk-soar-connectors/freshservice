@@ -256,6 +256,7 @@ class FreshServiceConnector(BaseConnector):
         # BaseConnector will create a textual message based off of the summary dictionary
         if "ticket" in response.json():
             success_message = "Ticket created with ID " + str((response.json()['ticket']['id']))
+            self.save_progress(success_message)
             return action_result.set_status(phantom.APP_SUCCESS, success_message)
         else:
             # For now return Error with a message, in case of success we don't set the message, but use the summary
@@ -300,6 +301,7 @@ class FreshServiceConnector(BaseConnector):
         # BaseConnector will create a textual message based off of the summary dictionary
         if not ('404' in str(response)):
             success_message = "Got ticket ID " + str((response.json()['ticket']['id']))
+            self.save_progress("Successfully fetched ticket information")
             return action_result.set_status(phantom.APP_SUCCESS, success_message)
         else:
             # For now return Error with a message, in case of success we don't set the message, but use the summary
@@ -351,6 +353,7 @@ class FreshServiceConnector(BaseConnector):
         # BaseConnector will create a textual message based off of the summary dictionary
         if "conversation" in response.json():
             success_message = "Note created with conversation ID " + str((response.json()['conversation']['id']))
+            self.save_progress(success_message)
             return action_result.set_status(phantom.APP_SUCCESS, success_message)
         else:
             # For now return Error with a message, in case of success we don't set the message, but use the summary
@@ -481,6 +484,7 @@ class FreshServiceConnector(BaseConnector):
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
         if "ticket" in response.json():
+            self.save_progress("Successfully updated ticket")
             return action_result.set_status(phantom.APP_SUCCESS, "Ticket was updated.")
         else:
             # For now return Error with a message, in case of success we don't set the message, but use the summary

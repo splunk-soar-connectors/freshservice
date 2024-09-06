@@ -19,7 +19,7 @@
     "app_wizard_version": "1.0.0",
     "configuration": {
         "base_url": {
-            "description": "e.g. domain.freshservice.com",
+            "description": "Base URL for API request. e.g. domain.freshservice.com",
             "data_type": "string",
             "required": true,
             "order": 0,
