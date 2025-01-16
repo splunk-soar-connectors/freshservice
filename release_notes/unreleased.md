@@ -1,2 +1,1 @@
 **Unreleased**
-* Initial app release, with actions for "create ticket", "get ticket", "add note", and "update ticket"
