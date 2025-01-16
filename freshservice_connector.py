@@ -1,6 +1,6 @@
 # File: freshservice_connector.py
 
-# Copyright (c) Orro Group, 2024
+# Copyright (c) Orro Group, 2023
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
