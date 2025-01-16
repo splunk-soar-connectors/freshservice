@@ -21,6 +21,7 @@ import json
 
 # Phantom App imports
 import phantom.app as phantom
+
 # Usage of the consts file is recommended
 # from freshservice_consts import *
 import requests
@@ -53,11 +54,7 @@ class FreshServiceConnector(BaseConnector):
         if response.status_code == 200:
             return RetVal(phantom.APP_SUCCESS, {})
 
-        return RetVal(
-            action_result.set_status(
-                phantom.APP_ERROR, "Empty response and no information in the header"
-            ), None
-        )
+        return RetVal(action_result.set_status(phantom.APP_ERROR, "Empty response and no information in the header"), None)
 
     def _process_html_response(self, response, action_result):
         # An html response, treat it like an error
@@ -66,15 +63,15 @@ class FreshServiceConnector(BaseConnector):
         try:
             soup = BeautifulSoup(response.text, "html.parser")
             error_text = soup.text
-            split_lines = error_text.split('\n')
+            split_lines = error_text.split("\n")
             split_lines = [x.strip() for x in split_lines if x.strip()]
-            error_text = '\n'.join(split_lines)
+            error_text = "\n".join(split_lines)
         except:
             error_text = "Cannot parse error details"
 
         message = "Status Code: {0}. Data from server:\n{1}\n".format(status_code, error_text)
 
-        message = message.replace(u'{', '{{').replace(u'}', '}}')
+        message = message.replace("{", "{{").replace("}", "}}")
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _process_json_response(self, r, action_result):
@@ -82,42 +79,35 @@ class FreshServiceConnector(BaseConnector):
         try:
             resp_json = r.json()
         except Exception as e:
-            return RetVal(
-                action_result.set_status(
-                    phantom.APP_ERROR, "Unable to parse JSON response. Error: {0}".format(str(e))
-                ), None
-            )
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to parse JSON response. Error: {0}".format(str(e))), None)
 
         # Please specify the status codes here
         if 200 <= r.status_code < 399:
             return RetVal(phantom.APP_SUCCESS, resp_json)
 
         # You should process the error returned in the json
-        message = "Error from server. Status Code: {0} Data from server: {1}".format(
-            r.status_code,
-            r.text.replace(u'{', '{{').replace(u'}', '}}')
-        )
+        message = "Error from server. Status Code: {0} Data from server: {1}".format(r.status_code, r.text.replace("{", "{{").replace("}", "}}"))
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _process_response(self, r, action_result):
         # store the r_text in debug data, it will get dumped in the logs if the action fails
-        if hasattr(action_result, 'add_debug_data'):
-            action_result.add_debug_data({'r_status_code': r.status_code})
-            action_result.add_debug_data({'r_text': r.text})
-            action_result.add_debug_data({'r_headers': r.headers})
+        if hasattr(action_result, "add_debug_data"):
+            action_result.add_debug_data({"r_status_code": r.status_code})
+            action_result.add_debug_data({"r_text": r.text})
+            action_result.add_debug_data({"r_headers": r.headers})
 
         # Process each 'Content-Type' of response separately
 
         # Process a json response
-        if 'json' in r.headers.get('Content-Type', ''):
+        if "json" in r.headers.get("Content-Type", ""):
             return self._process_json_response(r, action_result)
 
         # Process an HTML response, Do this no matter what the api talks.
         # There is a high chance of a PROXY in between phantom and the rest of
         # world, in case of errors, PROXY's return HTML, this function parses
         # the error and adds it to the action_result.
-        if 'html' in r.headers.get('Content-Type', ''):
+        if "html" in r.headers.get("Content-Type", ""):
             return self._process_html_response(r, action_result)
 
         # it's not content-type that is to be parsed, handle an empty response
@@ -126,8 +116,7 @@ class FreshServiceConnector(BaseConnector):
 
         # everything else is actually an error at this point
         message = "Can't process response from server. Status Code: {0} Data from server: {1}".format(
-            r.status_code,
-            r.text.replace('{', '{{').replace('}', '}}')
+            r.status_code, r.text.replace("{", "{{").replace("}", "}}")
         )
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
@@ -142,10 +131,7 @@ class FreshServiceConnector(BaseConnector):
         try:
             request_func = getattr(requests, method)
         except AttributeError:
-            return RetVal(
-                action_result.set_status(phantom.APP_ERROR, "Invalid method: {0}".format(method)),
-                resp_json
-            )
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Invalid method: {0}".format(method)), resp_json)
 
         # Create a URL to connect to
         url = self._base_url + endpoint
@@ -154,15 +140,11 @@ class FreshServiceConnector(BaseConnector):
             r = request_func(
                 url,
                 # auth=(username, password),  # basic authentication
-                verify=config.get('verify_server_cert', False),
-                **kwargs
+                verify=config.get("verify_server_cert", False),
+                **kwargs,
             )
         except Exception as e:
-            return RetVal(
-                action_result.set_status(
-                    phantom.APP_ERROR, "Error Connecting to server. Details: {0}".format(str(e))
-                ), resp_json
-            )
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Error Connecting to server. Details: {0}".format(str(e))), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -177,9 +159,7 @@ class FreshServiceConnector(BaseConnector):
 
         self.save_progress("Connecting to endpoint")
         # make rest call
-        ret_val, response = self._make_rest_call(
-            'riot-orro-test.freshservice.com', action_result, params=None, headers=None
-        )
+        ret_val, response = self._make_rest_call("riot-orro-test.freshservice.com", action_result, params=None, headers=None)
 
         if phantom.is_fail(ret_val):
             # the call to the 3rd party device or service failed, action result should contain all the error details
@@ -203,14 +183,14 @@ class FreshServiceConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         # Set or get params
-        subject = param.get('subject', '')
-        description = param.get('description', '')
-        requester_id = param.get('requester_id', '')
-        priority = param.get('priority', '')
-        status = param.get('status', '')
-        group_id = param.get('group_id', '')
-        custom_field = param.get('custom_field', '')
-        custom_field_value = param.get('custom_field_value', '')
+        subject = param.get("subject", "")
+        description = param.get("description", "")
+        requester_id = param.get("requester_id", "")
+        priority = param.get("priority", "")
+        status = param.get("status", "")
+        group_id = param.get("group_id", "")
+        custom_field = param.get("custom_field", "")
+        custom_field_value = param.get("custom_field_value", "")
         # Create ticket endpoint, for this action.
         ct_endpoint = "/api/v2/tickets"
         # Import this module for the HTTPBasicAuth shortcut in the request rather than b64 encoding and authorization header.
@@ -218,7 +198,7 @@ class FreshServiceConnector(BaseConnector):
         from requests.auth import HTTPBasicAuth
 
         # HTTP POST
-        url = 'https://' + self._base_url + ct_endpoint
+        url = "https://" + self._base_url + ct_endpoint
         if not custom_field == "":
             payload = {
                 "subject": subject,
@@ -227,9 +207,7 @@ class FreshServiceConnector(BaseConnector):
                 "priority": int(priority),
                 "status": int(status),
                 "group_id": int(group_id),
-                "custom_fields": {
-                    custom_field: custom_field_value
-                }
+                "custom_fields": {custom_field: custom_field_value},
             }
         else:
             payload = {
@@ -238,10 +216,10 @@ class FreshServiceConnector(BaseConnector):
                 "requester_id": int(requester_id),
                 "priority": int(priority),
                 "status": int(status),
-                "group_id": int(group_id)
+                "group_id": int(group_id),
             }
 
-        response = requests.request("POST", url, auth=HTTPBasicAuth(self._api_key, ':X'), json=payload)
+        response = requests.request("POST", url, auth=HTTPBasicAuth(self._api_key, ":X"), json=payload)
 
         # Now post process the data,  uncomment code as you deem fit.
         # Add the response into the data section, after testing response as an invalid ticket gives no
@@ -255,7 +233,7 @@ class FreshServiceConnector(BaseConnector):
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
         if "ticket" in response.json():
-            success_message = "Ticket created with ID " + str((response.json()['ticket']['id']))
+            success_message = "Ticket created with ID " + str((response.json()["ticket"]["id"]))
             self.save_progress(success_message)
             return action_result.set_status(phantom.APP_SUCCESS, success_message)
         else:
@@ -273,7 +251,7 @@ class FreshServiceConnector(BaseConnector):
         # Access action parameters passed in the 'param' dictionary
 
         # Set or get params
-        ticket_id = param['ticket_id']
+        ticket_id = param["ticket_id"]
         # Get ticket endpoint, for this action.
         gt_endpoint = "/api/v2/tickets/"
         # Import this module for the HTTPBasicAuth shortcut in the request rather than b64 encoding and authorization header.
@@ -281,12 +259,12 @@ class FreshServiceConnector(BaseConnector):
         from requests.auth import HTTPBasicAuth
 
         # HTTP POST
-        url = 'https://' + self._base_url + gt_endpoint + ticket_id
-        response = requests.request("GET", url, auth=HTTPBasicAuth(self._api_key, ':X'))
+        url = "https://" + self._base_url + gt_endpoint + ticket_id
+        response = requests.request("GET", url, auth=HTTPBasicAuth(self._api_key, ":X"))
 
         # Now post process the data,  uncomment code as you deem fit
         # Add the response into the data section
-        if not ('404' in str(response)):
+        if not ("404" in str(response)):
             action_result.add_data(response.json())
         else:
             response_str = """{"http_response": "404"}"""
@@ -299,8 +277,8 @@ class FreshServiceConnector(BaseConnector):
 
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
-        if not ('404' in str(response)):
-            success_message = "Got ticket ID " + str((response.json()['ticket']['id']))
+        if not ("404" in str(response)):
+            success_message = "Got ticket ID " + str((response.json()["ticket"]["id"]))
             self.save_progress("Successfully fetched ticket information")
             return action_result.set_status(phantom.APP_SUCCESS, success_message)
         else:
@@ -318,11 +296,11 @@ class FreshServiceConnector(BaseConnector):
         # Access action parameters passed in the 'param' dictionary
 
         # Required values can be accessed directly
-        ticket_id = param['ticket_id']
-        body = param['body']
+        ticket_id = param["ticket_id"]
+        body = param["body"]
 
         # Optional values should use the .get() function
-        private = param.get('private', '')
+        private = param.get("private", "")
 
         # Add note endpoint, for this action.
         an_endpoint = "/api/v2/tickets/"
@@ -331,14 +309,14 @@ class FreshServiceConnector(BaseConnector):
         from requests.auth import HTTPBasicAuth
 
         # HTTP POST
-        url_end = str(ticket_id) + '/notes'
-        url = 'https://' + self._base_url + an_endpoint + url_end
+        url_end = str(ticket_id) + "/notes"
+        url = "https://" + self._base_url + an_endpoint + url_end
         if not private == "":
             payload = {"body": body}
         else:
             payload = {"body": body, "private": bool(False)}
 
-        response = requests.request("POST", url, auth=HTTPBasicAuth(self._api_key, ':X'), json=payload)
+        response = requests.request("POST", url, auth=HTTPBasicAuth(self._api_key, ":X"), json=payload)
 
         # Now post process the data,  uncomment code as you deem fit.
         # Add the response into the data section, after testing response as an invalid ticket gives no
@@ -352,7 +330,7 @@ class FreshServiceConnector(BaseConnector):
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
         if "conversation" in response.json():
-            success_message = "Note created with conversation ID " + str((response.json()['conversation']['id']))
+            success_message = "Note created with conversation ID " + str((response.json()["conversation"]["id"]))
             self.save_progress(success_message)
             return action_result.set_status(phantom.APP_SUCCESS, success_message)
         else:
@@ -370,17 +348,17 @@ class FreshServiceConnector(BaseConnector):
         # Access action parameters passed in the 'param' dictionary
         # Set or get params
         # Required values can be accessed directly
-        ticket_id = param['ticket_id']
+        ticket_id = param["ticket_id"]
         # Optional values should use the .get() function
-        update_status = param.get('update_status', '')
-        update_priority = param.get('update_priority', '')
-        update_custom_field = param.get('update_custom_field', '')
-        update_custom_field_value = param.get('update_custom_field_value', '')
-        bypass_mandatory = param.get('bypass_mandatory', '')
-        responder_id = param.get('responder_id', '')
-        category = param.get('category', '')
-        sub_category = param.get('sub_category', '')
-        item_category = param.get('item_category', '')
+        update_status = param.get("update_status", "")
+        update_priority = param.get("update_priority", "")
+        update_custom_field = param.get("update_custom_field", "")
+        update_custom_field_value = param.get("update_custom_field_value", "")
+        bypass_mandatory = param.get("bypass_mandatory", "")
+        responder_id = param.get("responder_id", "")
+        category = param.get("category", "")
+        sub_category = param.get("sub_category", "")
+        item_category = param.get("item_category", "")
         # Update ticket, endpoint for this action.
         update_endpoint = "/api/v2/tickets/"
         # Import this module for the HTTPBasicAuth shortcut in the request rather than b64 encoding and authorization header.
@@ -398,22 +376,17 @@ class FreshServiceConnector(BaseConnector):
                     payload = {
                         "priority": int(update_priority),
                         "status": int(update_status),
-                        "custom_fields": {
-                            update_custom_field: update_custom_field_value,
-                            "assigned_team": "Security"
-                        },
+                        "custom_fields": {update_custom_field: update_custom_field_value, "assigned_team": "Security"},
                         "responder_id": int(responder_id),
                         "category": category,
                         "sub_category": sub_category,
-                        "item_category": item_category
+                        "item_category": item_category,
                     }
                 else:
                     payload = {
                         "priority": int(update_priority),
                         "status": int(update_status),
-                        "custom_fields": {
-                            update_custom_field: update_custom_field_value
-                        }
+                        "custom_fields": {update_custom_field: update_custom_field_value},
                     }
             elif not responder_id == "":
                 payload = {
@@ -423,54 +396,41 @@ class FreshServiceConnector(BaseConnector):
                     "responder_id": int(responder_id),
                     "category": category,
                     "sub_category": sub_category,
-                    "item_category": item_category
+                    "item_category": item_category,
                 }
             else:
-                payload = {
-                    "priority": int(update_priority),
-                    "status": int(update_status)
-                }
+                payload = {"priority": int(update_priority), "status": int(update_status)}
         elif not update_custom_field == "":
             if not responder_id == "":
                 payload = {
                     "status": int(update_status),
-                    "custom_fields": {
-                        update_custom_field: update_custom_field_value,
-                        "assigned_team": "Security"
-                    },
+                    "custom_fields": {update_custom_field: update_custom_field_value, "assigned_team": "Security"},
                     "responder_id": int(responder_id),
                     "category": category,
                     "sub_category": sub_category,
-                    "item_category": item_category
+                    "item_category": item_category,
                 }
             else:
-                payload = {
-                    "status": int(update_status),
-                    "custom_fields": {
-                        update_custom_field: update_custom_field_value
-                    }
-                }
+                payload = {"status": int(update_status), "custom_fields": {update_custom_field: update_custom_field_value}}
         elif not responder_id == "":
             payload = {
                 "status": int(update_status),
-                "custom_fields": {
-                    "assigned_team": "Security"
-                },
+                "custom_fields": {"assigned_team": "Security"},
                 "responder_id": int(responder_id),
                 "category": category,
                 "sub_category": sub_category,
-                "item_category": item_category
+                "item_category": item_category,
             }
         else:
             payload = {"status": int(update_status)}
 
         # Create the URL depending on bypass_mandatory being true or not.
         if not bypass_mandatory == "":
-            url = 'https://' + self._base_url + update_endpoint + ticket_id + '?bypass_mandatory=true'
+            url = "https://" + self._base_url + update_endpoint + ticket_id + "?bypass_mandatory=true"
         else:
-            url = 'https://' + self._base_url + update_endpoint + ticket_id
+            url = "https://" + self._base_url + update_endpoint + ticket_id
 
-        response = requests.request("PUT", url, auth=HTTPBasicAuth(self._api_key, ':X'), json=payload)
+        response = requests.request("PUT", url, auth=HTTPBasicAuth(self._api_key, ":X"), json=payload)
 
         # Now post process the data,  uncomment code as you deem fit
 
@@ -498,19 +458,19 @@ class FreshServiceConnector(BaseConnector):
 
         self.debug_print("action_id", self.get_action_identifier())
 
-        if action_id == 'create_ticket':
+        if action_id == "create_ticket":
             ret_val = self._handle_create_ticket(param)
 
-        if action_id == 'get_ticket':
+        if action_id == "get_ticket":
             ret_val = self._handle_get_ticket(param)
 
-        if action_id == 'add_note':
+        if action_id == "add_note":
             ret_val = self._handle_add_note(param)
 
-        if action_id == 'update_ticket':
+        if action_id == "update_ticket":
             ret_val = self._handle_update_ticket(param)
 
-        if action_id == 'test_connectivity':
+        if action_id == "test_connectivity":
             ret_val = self._handle_test_connectivity(param)
 
         return ret_val
@@ -532,8 +492,8 @@ class FreshServiceConnector(BaseConnector):
         optional_config_name = config.get('optional_config_name')
         """
 
-        self._base_url = config.get('base_url')
-        self._api_key = config.get('api_key')
+        self._base_url = config.get("base_url")
+        self._api_key = config.get("api_key")
 
         return phantom.APP_SUCCESS
 
@@ -549,10 +509,10 @@ def main():
 
     argparser = argparse.ArgumentParser()
 
-    argparser.add_argument('input_test_json', help='Input Test JSON file')
-    argparser.add_argument('-u', '--username', help='username', required=False)
-    argparser.add_argument('-p', '--password', help='password', required=False)
-    argparser.add_argument('-v', '--verify', action='store_true', help='verify', required=False, default=False)
+    argparser.add_argument("input_test_json", help="Input Test JSON file")
+    argparser.add_argument("-u", "--username", help="username", required=False)
+    argparser.add_argument("-p", "--password", help="password", required=False)
+    argparser.add_argument("-v", "--verify", action="store_true", help="verify", required=False, default=False)
 
     args = argparser.parse_args()
     session_id = None
@@ -565,28 +525,29 @@ def main():
 
         # User specified a username but not a password, so ask
         import getpass
+
         password = getpass.getpass("Password: ")
 
     if username and password:
         try:
-            login_url = FreshServiceConnector._get_phantom_base_url() + '/login'
+            login_url = FreshServiceConnector._get_phantom_base_url() + "/login"
 
             print("Accessing the Login page")
             r = requests.get(login_url, verify=verify)
-            csrftoken = r.cookies['csrftoken']
+            csrftoken = r.cookies["csrftoken"]
 
             data = dict()
-            data['username'] = username
-            data['password'] = password
-            data['csrfmiddlewaretoken'] = csrftoken
+            data["username"] = username
+            data["password"] = password
+            data["csrfmiddlewaretoken"] = csrftoken
 
             headers = dict()
-            headers['Cookie'] = 'csrftoken=' + csrftoken
-            headers['Referer'] = login_url
+            headers["Cookie"] = "csrftoken=" + csrftoken
+            headers["Referer"] = login_url
 
             print("Logging into Platform to get the session id")
             r2 = requests.post(login_url, verify=verify, data=data, headers=headers)
-            session_id = r2.cookies['sessionid']
+            session_id = r2.cookies["sessionid"]
         except Exception as e:
             print("Unable to get session id from the platform. Error: " + str(e))
             sys.exit(1)
@@ -600,8 +561,8 @@ def main():
         connector.print_progress_message = True
 
         if session_id is not None:
-            in_json['user_session_token'] = session_id
-            connector._set_csrf_info(csrftoken, headers['Referer'])
+            in_json["user_session_token"] = session_id
+            connector._set_csrf_info(csrftoken, headers["Referer"])
 
         ret_val = connector._handle_action(json.dumps(in_json), None)
         print(json.dumps(json.loads(ret_val), indent=4))
@@ -609,5 +570,5 @@ def main():
     sys.exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

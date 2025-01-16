@@ -2,11 +2,11 @@
 # Fresh Service
 
 Publisher: Orro Group  
-Connector Version: 1.1.0  
+Connector Version: 1.1.1  
 Product Vendor: freshworks  
 Product Name: freshservice  
 Product Version Supported (regex): ".\*"  
-Minimum Product Version: 6.1.1.211  
+Minimum Product Version: 6.3.0  
 
 Fresh Service ITSM integration app
 
