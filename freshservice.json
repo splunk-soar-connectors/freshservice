@@ -10,7 +10,7 @@
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "Orro Group",
-    "license": "Copyright (c) Orro Group, 2023",
+    "license": "Copyright (c) Orro Group, 2023-2025",
     "app_version": "1.1.1",
     "utctime_updated": "2024-08-13T12:56:43.180093Z",
     "package_name": "phantom_freshservice",
