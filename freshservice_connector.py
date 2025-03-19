@@ -1,6 +1,6 @@
 # File: freshservice_connector.py
 
-# Copyright (c) Orro Group, 2023
+# Copyright (c) Orro Group, 2023-2025
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 
 
 # Python 3 Compatibility imports
-from __future__ import print_function, unicode_literals
 
 import json
 
@@ -31,17 +30,14 @@ from phantom.base_connector import BaseConnector
 
 
 class RetVal(tuple):
-
     def __new__(cls, val1, val2=None):
         return tuple.__new__(RetVal, (val1, val2))
 
 
 class FreshServiceConnector(BaseConnector):
-
     def __init__(self):
-
         # Call the BaseConnectors init first
-        super(FreshServiceConnector, self).__init__()
+        super().__init__()
 
         self._state = None
 
@@ -69,7 +65,7 @@ class FreshServiceConnector(BaseConnector):
         except:
             error_text = "Cannot parse error details"
 
-        message = "Status Code: {0}. Data from server:\n{1}\n".format(status_code, error_text)
+        message = f"Status Code: {status_code}. Data from server:\n{error_text}\n"
 
         message = message.replace("{", "{{").replace("}", "}}")
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
@@ -79,14 +75,14 @@ class FreshServiceConnector(BaseConnector):
         try:
             resp_json = r.json()
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to parse JSON response. Error: {0}".format(str(e))), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, f"Unable to parse JSON response. Error: {e!s}"), None)
 
         # Please specify the status codes here
         if 200 <= r.status_code < 399:
             return RetVal(phantom.APP_SUCCESS, resp_json)
 
         # You should process the error returned in the json
-        message = "Error from server. Status Code: {0} Data from server: {1}".format(r.status_code, r.text.replace("{", "{{").replace("}", "}}"))
+        message = "Error from server. Status Code: {} Data from server: {}".format(r.status_code, r.text.replace("{", "{{").replace("}", "}}"))
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
@@ -115,7 +111,7 @@ class FreshServiceConnector(BaseConnector):
             return self._process_empty_response(r, action_result)
 
         # everything else is actually an error at this point
-        message = "Can't process response from server. Status Code: {0} Data from server: {1}".format(
+        message = "Can't process response from server. Status Code: {} Data from server: {}".format(
             r.status_code, r.text.replace("{", "{{").replace("}", "}}")
         )
 
@@ -131,7 +127,7 @@ class FreshServiceConnector(BaseConnector):
         try:
             request_func = getattr(requests, method)
         except AttributeError:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Invalid method: {0}".format(method)), resp_json)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, f"Invalid method: {method}"), resp_json)
 
         # Create a URL to connect to
         url = self._base_url + endpoint
@@ -144,7 +140,7 @@ class FreshServiceConnector(BaseConnector):
                 **kwargs,
             )
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Error Connecting to server. Details: {0}".format(str(e))), resp_json)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, f"Error Connecting to server. Details: {e!s}"), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -177,7 +173,7 @@ class FreshServiceConnector(BaseConnector):
     def _handle_create_ticket(self, param):
         # Implement the handler here
         # use self.save_progress(...) to send progress messages back to the platform
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -233,7 +229,7 @@ class FreshServiceConnector(BaseConnector):
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
         if "ticket" in response.json():
-            success_message = "Ticket created with ID " + str((response.json()["ticket"]["id"]))
+            success_message = "Ticket created with ID " + str(response.json()["ticket"]["id"])
             self.save_progress(success_message)
             return action_result.set_status(phantom.APP_SUCCESS, success_message)
         else:
@@ -243,7 +239,7 @@ class FreshServiceConnector(BaseConnector):
     def _handle_get_ticket(self, param):
         # Implement the handler here
         # use self.save_progress(...) to send progress messages back to the platform
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -278,7 +274,7 @@ class FreshServiceConnector(BaseConnector):
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
         if not ("404" in str(response)):
-            success_message = "Got ticket ID " + str((response.json()["ticket"]["id"]))
+            success_message = "Got ticket ID " + str(response.json()["ticket"]["id"])
             self.save_progress("Successfully fetched ticket information")
             return action_result.set_status(phantom.APP_SUCCESS, success_message)
         else:
@@ -288,7 +284,7 @@ class FreshServiceConnector(BaseConnector):
     def _handle_add_note(self, param):
         # Implement the handler here
         # use self.save_progress(...) to send progress messages back to the platform
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -314,7 +310,7 @@ class FreshServiceConnector(BaseConnector):
         if not private == "":
             payload = {"body": body}
         else:
-            payload = {"body": body, "private": bool(False)}
+            payload = {"body": body, "private": False}
 
         response = requests.request("POST", url, auth=HTTPBasicAuth(self._api_key, ":X"), json=payload)
 
@@ -330,7 +326,7 @@ class FreshServiceConnector(BaseConnector):
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
         if "conversation" in response.json():
-            success_message = "Note created with conversation ID " + str((response.json()["conversation"]["id"]))
+            success_message = "Note created with conversation ID " + str(response.json()["conversation"]["id"])
             self.save_progress(success_message)
             return action_result.set_status(phantom.APP_SUCCESS, success_message)
         else:
@@ -340,7 +336,7 @@ class FreshServiceConnector(BaseConnector):
     def _handle_update_ticket(self, param):
         # Implement the handler here
         # use self.save_progress(...) to send progress messages back to the platform
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -522,7 +518,6 @@ def main():
     verify = args.verify
 
     if username is not None and password is None:
-
         # User specified a username but not a password, so ask
         import getpass
 
