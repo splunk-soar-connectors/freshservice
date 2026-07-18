@@ -1,9 +1,9 @@
 # Fresh Service
 
-Publisher: Orro Group \
-Connector Version: 1.1.1 \
-Product Vendor: freshworks \
-Product Name: freshservice \
+Publisher: Orro Group <br>
+Connector Version: 1.1.1 <br>
+Product Vendor: freshworks <br>
+Product Name: freshservice <br>
 Minimum Product Version: 6.3.0
 
 Fresh Service ITSM integration app
@@ -23,17 +23,17 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 
 ### Supported Actions
 
-[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration \
-[create ticket](#action-create-ticket) - Create a ticket (issue) \
-[get ticket](#action-get-ticket) - Get ticket (issue) information \
-[add note](#action-add-note) - Add a note to a ticket \
+[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration <br>
+[create ticket](#action-create-ticket) - Create a ticket (issue) <br>
+[get ticket](#action-get-ticket) - Get ticket (issue) information <br>
+[add note](#action-add-note) - Add a note to a ticket <br>
 [update ticket](#action-update-ticket) - Update ticket (issue)
 
 ## action: 'test connectivity'
 
 Validate the asset configuration for connectivity using supplied configuration
 
-Type: **test** \
+Type: **test** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -48,7 +48,7 @@ No Output
 
 Create a ticket (issue)
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -81,7 +81,7 @@ summary.total_objects_successful | numeric | | |
 
 Get ticket (issue) information
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -104,7 +104,7 @@ summary.total_objects_successful | numeric | | |
 
 Add a note to a ticket
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -131,7 +131,7 @@ summary.total_objects_successful | numeric | | |
 
 Update ticket (issue)
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -172,7 +172,7 @@ ______________________________________________________________________
 
 Auto-generated Splunk SOAR Connector documentation.
 
-Copyright 2025 Splunk Inc.
+Copyright 2026 Splunk Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
