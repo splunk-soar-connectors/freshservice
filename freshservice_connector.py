@@ -1,6 +1,6 @@
 # File: freshservice_connector.py
 
-# Copyright (c) Orro Group, 2023-2025
+# Copyright (c) Orro Group, 2023-2026
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,6 +45,18 @@ class FreshServiceConnector(BaseConnector):
         # Do note that the app json defines the asset config, so please
         # modify this as you deem fit.
         self._base_url = None
+
+    @staticmethod
+    def _validate_ticket_id(action_result, value):
+        if isinstance(value, bool):
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Parameter 'ticket_id' must be a positive integer"), None)
+        try:
+            value = int(value)
+        except (TypeError, ValueError):
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Parameter 'ticket_id' must be a positive integer"), None)
+        if value <= 0:
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Parameter 'ticket_id' must be a positive integer"), None)
+        return RetVal(phantom.APP_SUCCESS, str(value))
 
     def _process_empty_response(self, response, action_result):
         if response.status_code == 200:
@@ -247,7 +259,9 @@ class FreshServiceConnector(BaseConnector):
         # Access action parameters passed in the 'param' dictionary
 
         # Set or get params
-        ticket_id = param["ticket_id"]
+        ret_val, ticket_id = self._validate_ticket_id(action_result, param["ticket_id"])
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
         # Get ticket endpoint, for this action.
         gt_endpoint = "/api/v2/tickets/"
         # Import this module for the HTTPBasicAuth shortcut in the request rather than b64 encoding and authorization header.
@@ -292,7 +306,9 @@ class FreshServiceConnector(BaseConnector):
         # Access action parameters passed in the 'param' dictionary
 
         # Required values can be accessed directly
-        ticket_id = param["ticket_id"]
+        ret_val, ticket_id = self._validate_ticket_id(action_result, param["ticket_id"])
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
         body = param["body"]
 
         # Optional values should use the .get() function
@@ -344,7 +360,9 @@ class FreshServiceConnector(BaseConnector):
         # Access action parameters passed in the 'param' dictionary
         # Set or get params
         # Required values can be accessed directly
-        ticket_id = param["ticket_id"]
+        ret_val, ticket_id = self._validate_ticket_id(action_result, param["ticket_id"])
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
         # Optional values should use the .get() function
         update_status = param.get("update_status", "")
         update_priority = param.get("update_priority", "")

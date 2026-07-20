@@ -7,10 +7,10 @@
     "logo": "logo_freshservice.svg",
     "logo_dark": "logo_freshservice_dark.svg",
     "product_name": "freshservice",
-    "python_version": "3",
+    "python_version": "3.9, 3.13",
     "product_version_regex": ".*",
     "publisher": "Orro Group",
-    "license": "Copyright (c) Orro Group, 2023-2025",
+    "license": "Copyright (c) Orro Group, 2023-2026",
     "app_version": "1.1.1",
     "utctime_updated": "2024-08-13T12:56:43.180093Z",
     "package_name": "phantom_freshservice",
@@ -530,5 +530,11 @@
             },
             "versions": "EQ(*)"
         }
-    ]
+    ],
+    "pip39_dependencies": {
+        "wheel": []
+    },
+    "pip313_dependencies": {
+        "wheel": []
+    }
 }
