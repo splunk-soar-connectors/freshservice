@@ -1,7 +1,7 @@
 # Fresh Service
 
 Publisher: Orro Group <br>
-Connector Version: 1.1.1 <br>
+Connector Version: 1.1.2 <br>
 Product Vendor: freshworks <br>
 Product Name: freshservice <br>
 Minimum Product Version: 6.3.0
